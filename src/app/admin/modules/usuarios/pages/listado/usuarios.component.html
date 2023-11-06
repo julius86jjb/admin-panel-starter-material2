@@ -1,0 +1,162 @@
+<c-row>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-body>
+        <c-row class="mb-4">
+
+          <c-col sm="5">
+            <h4 cCardTitle>Users</h4>
+            <h6 cCardSubtitle class="mb-2 text-medium-emphasis">
+              Total Users: {{totalUsers}}
+            </h6>
+
+          </c-col>
+          <c-col class="d-none d-md-block" sm="7">
+            <button [disabled]="currentUser!.role !== Role.SuperAdmin" [routerLink]="['./nuevo']" cButton class="float-end" color="primary">
+              New User
+            </button>
+
+          </c-col>
+        </c-row>
+        <c-row class="mb-4">
+          <c-col>
+            <input aria-label="lg input example" cFormControl placeholder="Search User, Email, Country, Role..." sizing="lg" type="text"
+              (keyup)="onSearch( txtTerm.value, 1 )" #txtTerm>
+
+          </c-col>
+        </c-row>
+
+        <c-row class="mb-4">
+          <div *ngIf="cargando()" class="fade show" style="text-align: center; padding: 50px;">
+            <i class="spinner-grow spinner-grow-sm"></i>
+            <span class="m-1">Loading...</span>
+          </div>
+          <div *ngIf="users.length === 0 && !cargando()" class="fade show"
+            style="text-align: center; padding: 50px;">
+            <div class="fw-semibold text-nowrap">No se encontraron usuarios</div>
+          </div>
+          <table *ngIf="users.length !== 0 && !cargando() " [hover]="true" [responsive]="true"
+            [striped]="true" align="middle" cTable class="mb-0 border">
+            <thead cTableColor="light">
+              <tr>
+                <th class="text-center">
+                  <svg cIcon name="cilPeople"></svg>
+                </th>
+
+                <th>User</th>
+                <th class="text-center">Country</th>
+                <th>Role</th>
+                <th>Activity</th>
+                <th class="text-center"></th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <div *ngIf="users.length === 0 && !cargando()" class="fade show"
+                style="text-align: center; padding: 50px;">
+                <div class="fw-semibold text-nowrap">No se encontraron usuarios</div>
+              </div>
+
+              <tr *ngFor="let user of users; index as i">
+                <td class="text-center">
+                  <c-avatar size="lg" [src]="user.avatar | userAvatar" [status]="user.isActive | isActive"
+                    (click)="abrirModal(user)" class="pointer" [ngClass]="{'pointer': currentUser!.role === Role.SuperAdmin}">
+                  </c-avatar>
+                  <div class="text-center">
+                    <c-form-check [switch]="true" sizing="lg">
+                      <input (change)="updateUser(user)" [(ngModel)]="user.isActive" cFormCheckInput
+                        [checked]="user.isActive" [disabled]="currentUser!.role !== Role.SuperAdmin" type="checkbox"
+                        class="pointer" />
+                    </c-form-check>
+                  </div>
+
+                </td>
+                <td>
+                  <div>{{ user.name }}</div>
+                  <div class="small text-medium-emphasis text-nowrap">
+                    <span>
+                      {{ user.email }}
+                    </span>
+                  </div>
+                  <div class="small text-medium-emphasis text-nowrap">
+                    <span>
+                      Registered: {{ user.createdAt | date }}
+                    </span>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div *ngIf="user.country">
+                    <svg cIcon name="cif-{{ user.country.cca2 | lowercase}}"
+                      size="xl" title="{{ user.country.name }}"></svg>
+                    <div class="small text-medium-emphasis text-nowrap">
+                      <span> {{user.country.name}}</span>
+                    </div>
+                  </div>
+
+                </td>
+
+                <td>
+                  <select class="form-control" (change)="updateUser( user )" [(ngModel)]="user.role"
+                    [disabled]="currentUser!.role !== Role.SuperAdmin">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                    <option value="super_admin">Super Admin</option>
+                  </select>
+                </td>
+
+                <td>
+                  <div class="small text-medium-emphasis">Last login</div>
+                  <div class="fw-semibold text-nowrap">{{ user.last_login | timeAgo}}</div>
+                </td>
+                <td>
+                  <div>
+
+                    <a [routerLink]="['/admin/usuarios', user._id]" cNavLink [disabled]="currentUser!.role !== Role.SuperAdmin">
+                      <svg cIcon name="cil-pen" size="lg"></svg>
+                    </a>
+                    <a (click)="onDelete(user)" cNavLink [disabled]="currentUser!.role !== Role.SuperAdmin">
+                      <svg cIcon name="cil-trash" size="lg"></svg>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </c-row>
+        <c-row class="mb-4" *ngIf="users.length !== 0">
+          <div class="small text-medium-emphasis text-center">{{currentPage}} de {{totalPages}} páginas</div>
+        </c-row>
+        <div *ngIf="txtTerm.value.length === 0 && users.length !== 0 && !cargando()">
+          <c-row class="mb-4">
+            <c-pagination align="center">
+              <button shape="rounded-0" cButton color="primary" variant="outline" [disabled]="currentPage === 1"
+                (click)="loadPage( currentPage - 1 )">
+                Previous
+              </button>
+              <button shape="rounded-0" cButton color="primary" variant="outline" class="btn btn-primary"
+                [disabled]="currentPage === totalPages" (click)="loadPage( currentPage + 1 )">
+                Next
+              </button>
+            </c-pagination>
+          </c-row>
+        </div>
+
+        <div *ngIf="txtTerm.value.length !== 0 && users.length !== 0 && !cargando()">
+          <c-row class="mb-4">
+            <c-pagination align="center">
+              <button shape="rounded-0" cButton color="primary" variant="outline" [disabled]="currentPage === 1"
+                (click)="onSearch(txtTerm.value,  currentPage - 1 )">
+                Previous
+              </button>
+              <button shape="rounded-0" cButton color="primary" variant="outline" class="btn btn-primary"
+                [disabled]="currentPage === totalPages" (click)="onSearch(txtTerm.value,  currentPage + 1 )">
+                Next
+              </button>
+            </c-pagination>
+          </c-row>
+        </div>
+
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

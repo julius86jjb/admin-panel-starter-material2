@@ -1,0 +1,26 @@
+<c-modal id="liveDemoModal" [visible]="this.modalImagenService.visible"
+  (visibleChange)="this.modalImagenService.handleLiveDemoChange($event)">
+  <c-modal-header>
+    <h5 cModalTitle>Profile Image</h5>
+    <button (click)="cerrarModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+
+    <div class="text-center mb-3" >
+      <img *ngIf="!imgTemp" [src]="modalImagenService.avatar()" class="img-avatar">
+      <img *ngIf="imgTemp" [src]="imgTemp" class="img-avatar">
+    </div>
+
+    <c-input-group class="mb-3">
+      <input cFormControl id="inputGroupFile01" type="file" (change)="cambiarImagen($event)" />
+    </c-input-group>
+
+
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="cerrarModal()" cButton color="secondary">
+      Close
+    </button>
+    <button cButton color="primary" (click)="uploadImage()">Save changes</button>
+  </c-modal-footer>
+</c-modal>

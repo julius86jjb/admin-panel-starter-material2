@@ -1,0 +1,136 @@
+<c-row>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-body>
+        <c-row class="mb-4">
+          <c-col sm="5">
+            <h4 class="card-title mb-0">New User</h4>
+          </c-col>
+          <c-col class="d-md-block" sm="7">
+            <button [routerLink]="['/admin/usuarios']" cButton class="float-end" color="primary">
+              Go to User List
+            </button>
+          </c-col>
+
+        </c-row>
+
+        <c-row class="mb-4 overflow-hidden" [gutter]="{gx: 5}">
+          <c-col sm="12">
+            <h5>User Information</h5>
+            <hr>
+            <form [formGroup]="myForm" (ngSubmit)="onSubmit()" cForm class="row g-3">
+              <c-col [md]="6">
+                <label cLabel>User Name</label>
+
+                <input cFormControl formControlName="name" [valid]="myForm.controls['name'].touched && myForm.controls['name'].valid
+                ? true
+                : (myForm.controls['name'].touched) && myForm.controls['name'].invalid
+                ? false
+                : undefined" type="text" placeholder="Full User Name" />
+
+                <c-form-feedback class="text-right" [valid]="false" *ngIf="isValidField('name')">
+                  {{ getFieldError('name') }}
+                </c-form-feedback>
+              </c-col>
+              <c-col [md]="6">
+                <label cLabel for="inputAddress">Email</label>
+                <input cFormControl formControlName="email" type="email" placeholder="example@email.com" [valid]="myForm.controls['email'].touched && myForm.controls['email'].valid
+                ? true
+                : (myForm.controls['email'].touched) && myForm.controls['email'].invalid
+                ? false
+                : undefined" />
+
+                <c-form-feedback [valid]="false" *ngIf="isValidField('email')">
+                  {{ getFieldError('email') }}
+                </c-form-feedback>
+              </c-col>
+
+
+              <c-col [md]="6">
+
+                <label cLabel>Password</label>
+                <input cFormControl formControlName="password" placeholder="Password" [valid]="myForm.controls['password'].touched && myForm.controls['password'].valid
+                ? true
+                : (myForm.controls['password'].touched) && myForm.controls['password'].invalid
+                ? false
+                : undefined" type="password" />
+
+                <c-form-feedback [valid]="false" *ngIf="isValidField('password')">
+                  {{ getFieldError('password') }}
+                </c-form-feedback>
+
+              </c-col>
+
+
+              <c-col [md]="6">
+                <label cLabel for="inputAddress">Confirm Password</label>
+                <input cFormControl formControlName="confirm_password" placeholder="Repeat Password" [valid]="myForm.controls['confirm_password'].touched && myForm.controls['confirm_password'].valid
+                      ? true
+                      : (myForm.controls['confirm_password'].touched) && myForm.controls['confirm_password'].invalid
+                      ? false
+                      : undefined" type="password" />
+                <c-form-feedback [valid]="false" *ngIf="isValidField('confirm_password')">
+                  {{ getFieldError('confirm_password') }}
+                </c-form-feedback>
+              </c-col>
+
+
+
+              <c-col [md]="5" [xs]="12">
+                <label cLabel for="inputPassword4">Role</label>
+                <select formControlName="role" cSelect class="form-control" [valid]="myForm.controls['role'].touched && myForm.controls['role'].valid
+                ? true
+                : (myForm.controls['role'].touched) && myForm.controls['role'].invalid
+                ? false
+                : undefined">
+
+                  <option value="">-- Select Role --</option>
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                  <option value="super_admin">Super Admin</option>
+                </select>
+
+                <c-form-feedback [valid]="false" *ngIf="isValidField('role')">
+                  {{ getFieldError('role') }}
+                </c-form-feedback>
+              </c-col>
+
+
+
+              <c-col [md]="5" [xs]="12">
+                <label cLabel for="inputAddress2">Country</label>
+                <select formControlName="country" cSelect class="form-control" [valid]="myForm.controls['country'].touched && myForm.controls['country'].valid
+                ? true
+                : (myForm.controls['country'].touched) && myForm.controls['country'].invalid
+                ? false
+                : undefined">
+                  <option value="">-- Select Country --</option>
+                  <option *ngFor="let country of countries" [value]="country.cca2 | lowercase">{{country.name.common}}
+                  </option>
+                </select>
+
+                <c-form-feedback [valid]="false" *ngIf="isValidField('country')">
+                  {{ getFieldError('country') }}
+                </c-form-feedback>
+
+
+              </c-col>
+              <c-col [md]="2" [xs]="12">
+                <label cLabel for="inputAddress2">Active </label><br>
+                <c-form-check sizing="xl" switch>
+                  <input formControlName="isActive" cFormCheckInput checked type="checkbox" />
+                </c-form-check>
+              </c-col>
+
+              <c-col [xs]="12">
+                <button cButton type="submit">Create User</button>
+              </c-col>
+            </form>
+          </c-col>
+
+        </c-row>
+
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
