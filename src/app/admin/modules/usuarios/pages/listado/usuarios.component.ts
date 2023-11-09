@@ -65,22 +65,37 @@ export class UsuariosComponent implements OnInit, OnDestroy {
   loadPage(page: number) {
     this.cargando.set(true);
     this.userService.loadPage(page)
-      .subscribe(() => this.cargando.set(false))
+    .subscribe({
+      next: () => this.cargando.set(false),
+      error: (message) => {
+        Swal.fire('Error', message, 'error')
+      }
+    })
   }
 
   updateUser(user: User) {
     this.cargando.set(true);
     this.userService.saveUser(user)
-      .subscribe((resp) => {
+    .subscribe({
+      next: (resp) => {
         this.loadPage(this.currentPage)
         this.cargando.set(false)
-      })
+      },
+      error: (message) => {
+        Swal.fire('Error', message, 'error')
+      }
+    })
   }
 
   onSearch(value: string, page: number) {
     this.cargando.set(true);
     this.userService.loadPage(page, value)
-      .subscribe(() => this.cargando.set(false))
+    .subscribe({
+      next: () => this.cargando.set(false),
+      error: (message) => {
+        Swal.fire('Error', message, 'error')
+      }
+    })
   }
 
   abrirModal(user: User) {
@@ -99,7 +114,8 @@ export class UsuariosComponent implements OnInit, OnDestroy {
       if (result.value) {
 
         this.userService.deleteUser(user._id)
-          .subscribe((user: User) => {
+        .subscribe({
+          next: (user: User) => {
 
             this.loadPage(this.currentPage)
             Swal.fire(
@@ -108,8 +124,11 @@ export class UsuariosComponent implements OnInit, OnDestroy {
               'success'
             );
 
-          });
-
+          },
+          error: (message) => {
+            Swal.fire('Error', message, 'error')
+          }
+        })
       }
     })
   }

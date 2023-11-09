@@ -58,15 +58,20 @@ export class ChangeEmailComponent implements OnInit {
       .pipe(
         delay(100)
       )
-      .subscribe((user: any) => {
-        if (!user) {
-          this.router.navigateByUrl(`/admin/usuarios`);
+      .subscribe({
+        next: (user: any) => {
+          if (!user) {
+            this.router.navigateByUrl(`/admin/usuarios`);
+          }
+          this.user.set(user);
+          this.myForm.patchValue({ oldEmail: user.email});
+          this.myForm.controls['oldEmail'].disable();
+          this.cargando.set(false);
+        },
+        error: (message) => {
+          Swal.fire('Error', message, 'error')
         }
-        this.user.set(user);
-        this.myForm.patchValue({ oldEmail: user.email});
-        this.myForm.controls['oldEmail'].disable();
-        this.cargando.set(false);
-      });
+      })
   }
 
   onSubmit() {

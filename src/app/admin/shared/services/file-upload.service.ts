@@ -13,18 +13,18 @@ export class FileUploadService {
   private readonly baseUrl: string = environments.baseUrl;
 
   private http = inject(HttpClient);
-  private userService = inject(UserService);
 
-  private headers = new HttpHeaders()
-    .set('Authorization', `Bearer ${this.userService.token}`);
 
   updateImg(archivo: File, tipo: string, id: string): Observable<string> {
 
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     const url = `${this.baseUrl}/${tipo}/upload/${id}`;
+
 
     const formData = new FormData();
     formData.append('avatar', archivo);
-    return this.http.post<UploadResponse>(url, formData, {headers: this.headers} )
+    return this.http.post<UploadResponse>(url, formData, { headers: headers })
       .pipe(
         map((resp) => resp.fileName),
         catchError(err => {

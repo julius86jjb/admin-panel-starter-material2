@@ -29,12 +29,6 @@ export class UserService implements OnInit {
   public totalUsers = computed(() => this._totalUsers());
   public totalPages = computed(() => this._totalPages());
 
-  get token(): string {
-    return localStorage.getItem('token') || '';
-  }
-
-  private headers = new HttpHeaders()
-    .set('Authorization', `Bearer ${this.token}`);
 
 
   constructor() {
@@ -42,6 +36,10 @@ export class UserService implements OnInit {
 
 
   ngOnInit(): void {
+  }
+
+  get token(): string {
+    return localStorage.getItem('token') || '';
   }
 
   setUsersListData(response: PaginatedUsers) {
@@ -52,27 +50,37 @@ export class UserService implements OnInit {
 
 
 
+
+
   loadPage(page: number, term?: string): Observable<PaginatedUsers> {
+
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     if (term) {
       const url = `${this.baseUrl}/usuarios/busqueda/${term}`;
-      return this.http.get<PaginatedUsers>(url, { params: { page: page }, headers: this.headers })
+      return this.http.get<PaginatedUsers>(url, { params: { page: page }, headers: headers })
         .pipe(
           tap(resp => this.setUsersListData(resp)),
           tap(() => this._currentPage.set(page)),
+          catchError(err => throwError(() => err.error.message))
 
         )
     } else {
       const url = `${this.baseUrl}/usuarios`;
-      return this.http.get<PaginatedUsers>(url, { params: { page: page }, headers: this.headers })
+      return this.http.get<PaginatedUsers>(url, { params: { page: page }, headers: headers })
         .pipe(
           tap(resp => this.setUsersListData(resp)),
-          tap(() => this._currentPage.set(page))
+          tap(() => this._currentPage.set(page)),
+          catchError(err => throwError(() => err.error.message))
         )
     }
   }
 
   create(user: any): Observable<User> {
+
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     const url = `${this.baseUrl}/usuarios`;
     return this.countriesService.getLittleCountryByAlphaCode(user.country).pipe(
@@ -83,12 +91,15 @@ export class UserService implements OnInit {
         }
       }),
       map(() => user),
-      switchMap((user: User) => this.http.post<User>(url, user, { headers: this.headers })),
+      switchMap((user: User) => this.http.post<User>(url, user, { headers: headers })),
       catchError(err => throwError(() => err.error.message))
     )
   }
 
   update(user: any): Observable<User> {
+
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     const url = `${this.baseUrl}/usuarios/${user._id}`;
     return this.countriesService.getLittleCountryByAlphaCode(user.country).pipe(
@@ -103,32 +114,43 @@ export class UserService implements OnInit {
         const { _id, ...userDto } = user
         return userDto
       }),
-      switchMap((userDto: User) => this.http.patch<User>(url, userDto, { headers: this.headers })),
+      switchMap((userDto: User) => this.http.patch<User>(url, userDto, { headers: headers })),
       catchError(err => throwError(() => err.error.message))
     )
   }
 
   getUserById(id: string): Observable<User> {
+
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
     const url = `${this.baseUrl}/usuarios/${id}`;
-    return this.http.get<User>(url, { headers: this.headers })
+    return this.http.get<User>(url, { headers: headers }).pipe(
+      catchError(err => throwError(() => err.error.message))
+    )
   }
 
   checkCredentials(id: string, email: string, password: string) {
+
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
     const url = `${this.baseUrl}/check-credentials/${id}`;
     const body = { email, password }
 
-    return this.http.post<LoginResponse>(url, body, { headers: this.headers })
+    return this.http.post<LoginResponse>(url, body, { headers: headers })
       .pipe(
-        map((resp) => resp.user)
+        map((resp) => resp.user),
+        catchError(err => throwError(() => err.error.message))
       )
   }
 
 
   changeEmail(id: string, oldEmail: string, password: string, newEmail: string) {
 
+
     return this.checkCredentials(id, oldEmail, password).pipe(
       map((user) => {
-        console.log({user})
         const userUpdated = {
           _id: user._id,
           email: newEmail
@@ -143,6 +165,7 @@ export class UserService implements OnInit {
   }
 
   changePassword(id: string, email: string, password: string, newPassword: string) {
+
 
     return this.checkCredentials(id, email, password).pipe(
       map((user) => {
@@ -162,18 +185,31 @@ export class UserService implements OnInit {
 
 
   saveUser(updatedUser: User) {
+
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     const { _id, ...user } = updatedUser
-    return this.http.patch(`${this.baseUrl}/usuarios/${updatedUser._id}`, user, { headers: this.headers });
+    return this.http.patch(`${this.baseUrl}/usuarios/${updatedUser._id}`, user, { headers: headers }).pipe(
+      catchError(err => throwError(() => err.error.message))
+    )
   }
 
   updatePassword(updatedUser: User) {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     const { _id, ...user } = updatedUser
-    return this.http.patch(`${this.baseUrl}/usuarios/update-password/${updatedUser._id}`, user, { headers: this.headers });
+    return this.http.patch(`${this.baseUrl}/usuarios/update-password/${updatedUser._id}`, user, { headers: headers }).pipe(
+      catchError(err => throwError(() => err.error.message))
+    )
   }
 
   deleteUser(id: string): Observable<User> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     const url = `${this.baseUrl}/usuarios/${id}`;
-    return this.http.delete<User>(url, { headers: this.headers })
+    return this.http.delete<User>(url, { headers: headers }).pipe(
+      catchError(err => throwError(() => err.error.message))
+    )
   }
 
 

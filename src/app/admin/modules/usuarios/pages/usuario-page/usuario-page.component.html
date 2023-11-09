@@ -12,7 +12,8 @@
           </c-col>
 
           <c-col class="d-none d-md-block" sm="7">
-            <button [routerLink]="['/admin/usuarios']" cButton class="float-end" color="primary">
+            <button [routerLink]="['/admin/usuarios']" cButton class="float-end" color="primary" [disabled]="currentUser?.role === Role.User">
+
               Go to User List
             </button>
           </c-col>

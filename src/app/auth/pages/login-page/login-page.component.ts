@@ -24,6 +24,19 @@ export class LoginPageComponent {
 
   })
 
+  public superAdminUserDemo = {
+    email: 'super_admin1@email.com',
+    password: '123456'
+  }
+  public adminUserDemo = {
+    email: 'admin1@email.com',
+    password: '123456'
+  }
+  public userDemo = {
+    email: 'user1@email.com',
+    password: '123456'
+  }
+
   constructor(private validatorsService: ValidatorsService) {
 
   }

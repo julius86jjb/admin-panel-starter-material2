@@ -9,9 +9,10 @@ import { CountriesService } from '../../../../shared/modules/country/services/co
 
 import Swal from 'sweetalert2';
 import { UserService } from '../../services/user.service';
-import { User } from 'src/app/auth/interfaces';
+import { User, Role } from 'src/app/auth/interfaces';
 import { Subscription, delay } from 'rxjs';
 import { ModalImagenService } from 'src/app/admin/shared/services/modal-imagen.service';
+import { AuthService } from 'src/app/auth/services/auth.service';
 
 
 @Component({
@@ -28,10 +29,13 @@ export class UsuarioPageComponent implements OnInit {
   private modalImagenService = inject(ModalImagenService);
   private validatorsService = inject(ValidatorsService);
   private userService = inject(UserService);
+  private authService = inject(AuthService);
 
 
 
   public user = signal<User | null>(null);
+
+  public Role = Role;
 
   public myForm: FormGroup = this.fb.group({
     name: ['', [Validators.required]],
@@ -43,6 +47,10 @@ export class UsuarioPageComponent implements OnInit {
   public countries: Country[] = [];
   public cargando = signal<boolean>(false);
   public imgSubs: Subscription = Subscription.EMPTY;
+
+  get currentUser() {
+    return this.authService.currentUser()
+  }
 
 
   ngOnInit(): void {
@@ -76,18 +84,26 @@ export class UsuarioPageComponent implements OnInit {
   async loadUser(id: string) {
     this.cargando.set(true);
     await this.userService.getUserById(id)
-      .subscribe((user: any) => {
-        if (!user) this.router.navigateByUrl(`/admin/usuarios`);
+      .subscribe({
+        next: (user: any) => {
+          if (!user) this.router.navigateByUrl(`/admin/usuarios`);
 
-        this.user.set(user);
-        console.log(this.user())
-        const { name, country, role, isActive } = user;
-        country ? this.myForm.setValue({ name, role, country: user.country.cca2, isActive }) :
-          this.myForm.setValue({ name, role, country: '', isActive });
+          this.user.set(user);
+          console.log(this.user())
+          const { name, country, role, isActive } = user;
+          country ? this.myForm.setValue({ name, role, country: user.country.cca2, isActive }) :
+            this.myForm.setValue({ name, role, country: '', isActive });
 
-        this.cargando.set(false);
+          if (this.currentUser!.role !== Role.SuperAdmin || this.currentUser?._id === this.user()!._id) {
+            this.myForm.get('isActive')?.disable()
+          }
 
-      });
+          this.cargando.set(false);
+        },
+        error: (message) => {
+          Swal.fire('Error', message, 'error')
+        }
+      })
   }
 
   onSubmit() {
@@ -109,7 +125,6 @@ export class UsuarioPageComponent implements OnInit {
     .subscribe({
       next: (resp: any) => {
         Swal.fire('Done!', `User successfully updated`, 'success');
-        this.router.navigateByUrl(`admin/usuarios`);
       },
       error: (message) => {
         Swal.fire('Error', message, 'error')

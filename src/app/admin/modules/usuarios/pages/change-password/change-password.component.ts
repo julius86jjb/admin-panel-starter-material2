@@ -55,13 +55,18 @@ export class ChangePasswordComponent implements OnInit {
       .pipe(
         delay(100)
       )
-      .subscribe((user: any) => {
-        if (!user) {
-          this.router.navigateByUrl(`/admin/usuarios`);
+      .subscribe({
+        next: (user: any) => {
+          if (!user) {
+            this.router.navigateByUrl(`/admin/usuarios`);
+          }
+          this.user.set(user);
+          this.cargando.set(false);
+        },
+        error: (message) => {
+          Swal.fire('Error', message, 'error')
         }
-        this.user.set(user);
-        this.cargando.set(false);
-      });
+      })
   }
 
   isValidField(field: string): boolean | null {

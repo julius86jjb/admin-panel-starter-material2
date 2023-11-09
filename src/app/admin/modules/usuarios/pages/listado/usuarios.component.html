@@ -65,7 +65,7 @@
                   <div class="text-center">
                     <c-form-check [switch]="true" sizing="lg">
                       <input (change)="updateUser(user)" [(ngModel)]="user.isActive" cFormCheckInput
-                        [checked]="user.isActive" [disabled]="currentUser!.role !== Role.SuperAdmin" type="checkbox"
+                        [checked]="user.isActive" [disabled]="currentUser!.role !== Role.SuperAdmin || currentUser?._id === user._id" type="checkbox"
                         class="pointer" />
                     </c-form-check>
                   </div>

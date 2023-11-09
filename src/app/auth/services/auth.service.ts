@@ -3,7 +3,7 @@ import { Injectable, computed, inject, signal, OnInit } from '@angular/core';
 import { Observable, catchError, delay, map, of, tap, throwError } from 'rxjs';
 import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfaces';
 import { RegisterResponse } from '../interfaces/register-response.interface';
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { environments } from '../../../environments/environments';
 import { INavData } from '@coreui/angular';
 
@@ -15,6 +15,7 @@ export class AuthService{
 
   private readonly baseUrl: string = environments.baseUrl;
   private http = inject (HttpClient);
+  private router = inject (Router);
 
   private _currentUser = signal<User|null>(null);
   private _authStatus = signal<AuthStatus>(AuthStatus.checking);
@@ -84,6 +85,7 @@ export class AuthService{
     const headers = new HttpHeaders()
       .set('Authorization', `Bearer ${token}`);
 
+
     return this.http.get<CheckTokenResponse>(url, {headers: headers})
       .pipe(
 
@@ -97,10 +99,12 @@ export class AuthService{
   }
 
 
-  async logout() {
-    await this._authStatus.set( AuthStatus.notAuthenticated );
+  logout() {
+    this.router.navigateByUrl('/auth/login');
+    this._authStatus.set( AuthStatus.notAuthenticated );
     localStorage.removeItem('token');
     localStorage.removeItem('menu');
+    localStorage.removeItem('url');
     this._currentUser.set(null);
   }
 }

@@ -52,9 +52,7 @@ export class CountriesService {
 
     const url = `${this.baseUrl}/name/${country}?fields=borders`;
 
-    return this.http.get<string[]>(url).pipe(
-      tap((borders) =>console.log(borders))
-    )
+    return this.http.get<string[]>(url)
   }
 
   getCountryByAlphaCode(alphaCode: string): Observable<smallCountry> {

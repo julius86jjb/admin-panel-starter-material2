@@ -1,6 +1,6 @@
-<div class="bg-light min-vh-100 d-flex flex-row align-items-center">
+<div class="bg-light min-vh-100 d-flex flex-row align-items-center ">
   <c-container>
-    <c-row class="justify-content-center">
+    <c-row class="justify-content-center mt-3">
       <c-col md="8">
         <c-card-group>
           <c-card class="p-4">
@@ -35,7 +35,7 @@
                 </c-col>
 
 
-                <c-col [md]="12">
+                <c-col [md]="12" >
                   <c-input-group class="mb-4">
                     <span cInputGroupText>
                       <svg cIcon name="cilLockLocked"></svg>
@@ -70,7 +70,7 @@
               </form>
             </c-card-body>
           </c-card>
-          <c-card [ngStyle]="{'width.%': 44}" class="text-white bg-primary py-5">
+          <c-card   class="text-white bg-primary py-5">
             <c-card-body class="text-center">
               <div>
                 <h2>Sign Up</h2>
@@ -83,6 +83,39 @@
               </div>
             </c-card-body>
           </c-card>
+        </c-card-group>
+      </c-col>
+    </c-row>
+    <c-row class="justify-content-center mt-3">
+      <c-col md="8">
+        <c-card-group>
+          <c-card class="p-4">
+            <c-card-body>
+
+
+              <h4 class="text-center">Demo Credentials</h4>
+                <h6>1. Super Admin Role</h6>
+                  <small><b>Email:</b> {{superAdminUserDemo.email}}</small><br>
+                  <small><b>Password:</b> {{superAdminUserDemo.password}}</small><br>
+                  <small><b>Actions:</b> Create, read, update, delete and search users</small>
+                  <hr>
+                <h6>2. Admin Role</h6>
+                  <small><b>Email:</b> {{adminUserDemo.email}}</small><br>
+                  <small><b>Password:</b> {{adminUserDemo.password}}</small><br>
+                  <small><b>Actions:</b> Read and search users + edit profile</small>
+                  <hr>
+                <h6>3. User Role</h6>
+                  <small><b>Email:</b> {{userDemo.email}}</small><br>
+                  <small><b>Password:</b> {{userDemo.password}}</small><br>
+                  <small><b>Actions:</b> Edit profile</small>
+
+
+
+
+
+            </c-card-body>
+          </c-card>
+
         </c-card-group>
       </c-col>
     </c-row>
