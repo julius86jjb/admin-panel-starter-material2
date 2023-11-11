@@ -89,7 +89,6 @@ export class UsuarioPageComponent implements OnInit {
           if (!user) this.router.navigateByUrl(`/admin/usuarios`);
 
           this.user.set(user);
-          console.log(this.user())
           const { name, country, role, isActive } = user;
           country ? this.myForm.setValue({ name, role, country: user.country.cca2, isActive }) :
             this.myForm.setValue({ name, role, country: '', isActive });
